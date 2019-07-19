@@ -1,0 +1,34 @@
+language: minimal
+
+# Retry installing nix due to nondeterministic error
+#   Fatal error: glibc detected an invalid stdio handle
+# see:
+#   https://github.com/nh2/static-haskell-nix/pull/27#issuecomment-502652181
+#   https://github.com/nixos/nix/issues/2733
+install: |
+  (for i in {1..5}; do bash <(curl https://nixos.org/nix/install) && exit 0; done; exit 1)
+  . /home/travis/.nix-profile/etc/profile.d/nix.sh
+
+env:
+  - PKG=electrs STABLE=1
+  - PKG=hwi STABLE=1
+  - PKG=lightning-charge STABLE=1
+  - PKG=elementsd STABLE=1
+  - PKG=nanopos STABLE=1
+  - PKG=nodeinfo STABLE=1
+  - PKG=spark-wallet STABLE=1
+
+  - PKG=electrs STABLE=0
+  - PKG=hwi STABLE=0
+  - PKG=lightning-charge STABLE=0
+  - PKG=elementsd STABLE=0
+  - PKG=nanopos STABLE=0
+  - PKG=spark-wallet STABLE=0
+
+
+script: |
+  [ $STABLE -eq 1 ] && export NIX_PATH="nixpkgs=$(nix eval --raw -f pkgs/nixpkgs-pinned.nix nixpkgs.outPath)" REV="$(nix eval --raw -f pkgs/nixpkgs-pinned.nix nixpkgs.rev)"
+  [ $STABLE -eq 0 ] && export NIX_PATH="nixpkgs=$(nix eval --raw -f pkgs/nixpkgs-pinned.nix nixpkgs-unstable.outPath)" REV="$(nix eval --raw -f pkgs/nixpkgs-pinned.nix nixpkgs-unstable.rev)"
+  VER="$(nix eval nixpkgs.lib.version)"
+  printf '%s (%s @ %s)\n' "$NIX_PATH" "$VER" "$REV"
+  nix-build -A $PKG
