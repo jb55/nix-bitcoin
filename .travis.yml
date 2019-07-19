@@ -1,0 +1,29 @@
+language: nix
+nix: 2.2.2
+
+env:
+  global:
+    - STABLE: "NIX_PATH=nixpkgs=https://github.com/nixos/nixpkgs-channels/archive/nixos-19.03.tar.gz"
+    - UNSTABLE: "nixpkgs=https://github.com/nixos/nixpkgs-channels/archive/nixos-unstable.tar.gz"
+  matrix:
+    - PKG=banlist NIX_PATH=$STABLE
+    - PKG=electrs NIX_PATH=$STABLE
+    - PKG=hwi NIX_PATH=$STABLE
+    - PKG=lightning-charge NIX_PATH=$STABLE
+    - PKG=liquidd NIX_PATH=$STABLE
+    - PKG=nanopos NIX_PATH=$STABLE
+    - PKG=nodeinfo NIX_PATH=$STABLE
+    - PKG=spark-wallet NIX_PATH=$STABLE
+
+    - PKG=banlist NIX_PATH=$UNSTABLE
+    - PKG=electrs NIX_PATH=$UNSTABLE
+    - PKG=hwi NIX_PATH=$UNSTABLE
+    - PKG=lightning-charge NIX_PATH=$UNSTABLE
+    - PKG=liquidd NIX_PATH=$UNSTABLE
+    - PKG=nanopos NIX_PATH=$UNSTABLE
+    - PKG=nodeinfo NIX_PATH=$UNSTABLE
+    - PKG=spark-wallet NIX_PATH=$UNSTABLE
+
+
+script: nix-build -A $PKG
+
