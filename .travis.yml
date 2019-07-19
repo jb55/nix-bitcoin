@@ -1,0 +1,37 @@
+language: minimal
+
+# Retry installing nix due to nondeterministic error
+#   Fatal error: glibc detected an invalid stdio handle
+# see:
+#   https://github.com/nh2/static-haskell-nix/pull/27#issuecomment-502652181
+#   https://github.com/nixos/nix/issues/2733
+install: |
+  (for i in {1..5}; do bash <(curl https://nixos.org/nix/install) && exit 0; done; exit 1)
+  . /home/travis/.nix-profile/etc/profile.d/nix.sh
+  nix-env -iA cachix -f https://cachix.org/api/v1/install
+  cachix use nix-bitcoin
+  STABLE_NIXPKGS=$(nix eval --raw -f pkgs/nixpkgs-pinned.nix nixpkgs)
+  UNSTABLE_NIXPKGS=$(nix eval --raw -f pkgs/nixpkgs-pinned.nix nixpkgs-unstable)
+  [ $STABLE -eq 1 ] && export NIX_PATH="nixpkgs=$STABLE_NIXPKGS"
+  [ $STABLE -eq 0 ] && export NIX_PATH="nixpkgs=$UNSTABLE_NIXPKGS"
+  VER="$(nix eval nixpkgs.lib.version)"
+env:
+  matrix:
+  - PKG=nodeinfo STABLE=1
+  - PKG=hwi STABLE=1
+  - PKG=hwi STABLE=0
+  - PKG=lightning-charge STABLE=1
+  - PKG=lightning-charge STABLE=0
+  - PKG=nanopos STABLE=1
+  - PKG=nanopos STABLE=0
+  - PKG=spark-wallet STABLE=1
+  - PKG=spark-wallet STABLE=0
+  - PKG=elementsd STABLE=1
+  - PKG=elementsd STABLE=0
+  - PKG=electrs STABLE=1
+  - PKG=electrs STABLE=0
+  global:
+    secure: A/jsU3/hz6ARBt9NLn9G8jJqiMDFnjfWomkuVrfL6Y742Oc0j7kmTXNlVeuW++wsm5SbQHNYcJ3cPDwDILMPx1USzpBwFt0hLLYp1qzibRN7FF28Xds52T1jG1CdN0/ydejPnpXzDGqxSjm+ftY+LfJMAz5ybOgzqUyamUnXuAjlQJXCeMB37H2jELKZ7qnqQPoO9LBnvmLnG+i8uAYGzYOnh3la7ZVBdT7hE28uzsPwbotKNGqmmVpS/v3hXV9yP8JF3TQrI16/glHT+JCGPyxglv/IPIXGchlcD8oRhRYHrN9Dxw1ZE4jzbDGoSAjkDHygPM1RDAJDPsZReQUkq1NXuUY/yVSD4tVs+Boc+opaHT3XBhkPS2WctiP7oE2ddZIfXIG8fu7ThvAkwpi9UXcxkpuFobEIZkZ46/jOdNToWb2z42Lzpacpv95nnobyyP5s9JhuU01winRMLQK14YHfeFVgoIxkjhRkodxGFpy2Jole1KNfBPmoqytqsrcSFoASyQK7Vwpz6vF8ja+iRyFBr3a/V5Dcbx/hZ6vt2ZFdLGy7uPLT4wuYAHjj+LRJvUNnx0nxabC6P/JuTqMlaonTbhFYIaj8rwN9ldq6VgeualHVqFWG7rmcgs+ehTeA5d9/jhb2jzsLSFRwwycAqKpG7ch41PnY/JqviT47SyQ=
+script: |
+  printf '%s (%s)\n' "$NIX_PATH" "$VER"
+  nix-build -A $PKG | cachix push nix-bitcoin
