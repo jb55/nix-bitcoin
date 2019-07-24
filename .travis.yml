@@ -14,6 +14,8 @@ env:
     - PKG=nanopos NIX_PATH=$STABLE
     - PKG=nodeinfo NIX_PATH=$STABLE
     - PKG=spark-wallet NIX_PATH=$STABLE
+    - PKG=btcpayserver NIX_PATH=$STABLE
+    - PKG=nbxplorer NIX_PATH=$STABLE
 
     - PKG=banlist NIX_PATH=$UNSTABLE
     - PKG=electrs NIX_PATH=$UNSTABLE
@@ -23,6 +25,8 @@ env:
     - PKG=nanopos NIX_PATH=$UNSTABLE
     - PKG=nodeinfo NIX_PATH=$UNSTABLE
     - PKG=spark-wallet NIX_PATH=$UNSTABLE
+    - PKG=btcpayserver NIX_PATH=$UNSTABLE
+    - PKG=nbxplorer NIX_PATH=$UNSTABLE
 
 
 script: nix-build -A $PKG
