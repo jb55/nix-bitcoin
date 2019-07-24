@@ -1,5 +1,14 @@
-language: nix
-nix: 2.2.2
+language: minimal
+
+# Retry installing nix due to nondeterministic error
+#   Fatal error: glibc detected an invalid stdio handle
+# see:
+#   https://github.com/nh2/static-haskell-nix/pull/27#issuecomment-502652181
+#   https://github.com/nixos/nix/issues/2733
+
+install: |
+  (for i in {1..5}; do bash <(curl https://nixos.org/nix/install) && exit 0; done; exit 1)
+  . /home/travis/.nix-profile/etc/profile.d/nix.sh
 
 env:
   global:
