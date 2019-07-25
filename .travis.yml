@@ -26,6 +26,10 @@ env:
   - PKG=nanopos STABLE=0
   - PKG=spark-wallet STABLE=1
   - PKG=spark-wallet STABLE=0
+  - PKG=nbxplorer STABLE=1
+  - PKG=nbxplorer STABLE=0
+  - PKG=btcpayserver STABLE=1
+  - PKG=btcpayserver STABLE=0
   - PKG=elementsd STABLE=1
   - PKG=elementsd STABLE=0
   - PKG=electrs STABLE=1
