@@ -3,5 +3,5 @@ let
 in
 {
   nixpkgs = fetch "e6ad5e75f3bfaab5e7b7f0f128bf13d534879e65";
-  nixpkgs-unstable = fetch "765a71f15025ce78024bae3dc4a92bd2be3a8fbf";
+  nixpkgs-unstable = fetch "e6b249ce21fad9fd8eb0a74cadf82964924e9467";
 }
